@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,18 +22,23 @@ public class MainActivity extends AppCompatActivity {
     private static String TAG = "MainActivity";
     private FirebaseAuth mAuth;
 
-    private ConstraintLayout loggedInGroup;
-    private ConstraintLayout loggedOutGroup;
-    private TextView hello;
+    private ConstraintLayout mLoggedInGroup;
+    private ConstraintLayout mLoggedOutGroup;
+    private TextView mNameLabel;
+    private EditText mEmailField;
+    private EditText mPasswordField;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        loggedInGroup = findViewById(R.id.logged_in_group);
-        loggedOutGroup = findViewById(R.id.logged_out_group);
-        TextView hello = findViewById(R.id.hello);
+        mLoggedInGroup = findViewById(R.id.logged_in_group);
+        mLoggedOutGroup = findViewById(R.id.logged_out_group);
+        mNameLabel = findViewById(R.id.hello);
+        mEmailField = findViewById(R.id.email);
+        mPasswordField = findViewById(R.id.password);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -42,17 +49,50 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateUI(FirebaseUser currentUser) {
         if (currentUser != null) {
-            loggedOutGroup.setVisibility(View.GONE);
-            loggedInGroup.setVisibility(View.VISIBLE);
-            hello.setText(String.format(getResources().getString(R.string.hello), currentUser.getDisplayName()));
-        }
-        else {
-            loggedInGroup.setVisibility(View.GONE);
-            loggedOutGroup.setVisibility(View.VISIBLE);
+            mLoggedOutGroup.setVisibility(View.GONE);
+            mLoggedInGroup.setVisibility(View.VISIBLE);
+            mNameLabel.setText(String.format(getResources().getString(R.string.hello), currentUser.getEmail()));
+        } else {
+            mLoggedInGroup.setVisibility(View.GONE);
+            mLoggedOutGroup.setVisibility(View.VISIBLE);
         }
     }
 
-    private void signIn(String email, String password) {
+    public void signOut(View view) {
+        mAuth.signOut();
+        updateUI(null);
+    }
+
+    private boolean validateForm() {
+        boolean valid = true;
+
+        String email = mEmailField.getText().toString();
+        if (TextUtils.isEmpty(email)) {
+            mEmailField.setError("Required.");
+            valid = false;
+        } else {
+            mEmailField.setError(null);
+        }
+
+        String password = mPasswordField.getText().toString();
+        if (TextUtils.isEmpty(password)) {
+            mPasswordField.setError("Required.");
+            valid = false;
+        } else {
+            mPasswordField.setError(null);
+        }
+
+        return valid;
+    }
+
+
+    public void signIn(View view) {
+        if (!validateForm()) {
+            return;
+        }
+
+        String email = mEmailField.getText().toString();
+        String password = mPasswordField.getText().toString();
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -64,18 +104,24 @@ public class MainActivity extends AppCompatActivity {
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(MainActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
+                            Exception e = task.getException();
+                            Log.w(TAG, "signInWithEmail:failure", e);
+                            Toast.makeText(MainActivity.this, "Login failed: " + e.getLocalizedMessage(),
+                                    Toast.LENGTH_LONG).show();
                             updateUI(null);
                         }
-
-                        // ...
                     }
                 });
     }
 
-    private void createAccount(String email, String password) {
+    public void createAccount(View view) {
+        if (!validateForm()) {
+            return;
+        }
+
+        String email = mEmailField.getText().toString();
+        String password = mPasswordField.getText().toString();
+
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -86,18 +132,15 @@ public class MainActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
                         } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(MainActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
+                            // If registration fails, display a message to the user.
+                            Exception e = task.getException();
+                            Log.w(TAG, "createUserWithEmail:failure", e);
+                            Toast.makeText(MainActivity.this, "Registration failed: " + e.getLocalizedMessage(),
+                                    Toast.LENGTH_LONG).show();
                             updateUI(null);
                         }
-
-                        // ...
                     }
                 });
     }
-
-
 
 }
