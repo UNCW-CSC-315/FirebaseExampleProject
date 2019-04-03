@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">FirebaseExampleProject</string>
+    <string name="user_label">Username</string>
+    <string name="password_label">Password</string>
+    <string name="hello">Welcome %1$s!</string>
+    <string name="logout">Logout</string>
+</resources>
