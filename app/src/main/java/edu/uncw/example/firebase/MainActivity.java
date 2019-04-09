@@ -1,5 +1,6 @@
 package edu.uncw.example.firebase;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -19,7 +20,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static String TAG = "MainActivity";
+    private static final String TAG = "MainActivity";
     private FirebaseAuth mAuth;
 
     private ConstraintLayout mLoggedInGroup;
@@ -143,4 +144,7 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    public void launchFirestoreActivity(View view) {
+        startActivity(new Intent(this, DisplayActivity.class));
+    }
 }

@@ -6,4 +6,27 @@
     <string name="logout">Logout</string>
     <string name="login">Login</string>
     <string name="register">Create New Account</string>
+    <string name="firestore_button">Launch Firestore Activity</string>
+
+    <string name="header">Select some values and save the new user to the database.</string>
+    <string name="first_name_label">First name:</string>
+    <string name="last_name_label">Last name:</string>
+    <string name="user_id_label">UserID:</string>
+    <string-array name="first_names">
+        <item>Alan</item>
+        <item>Tim</item>
+        <item>Donald</item>
+        <item>Sergey</item>
+        <item>Grace</item>
+        <item>Ada</item>
+    </string-array>
+    <string-array name="last_names">
+        <item>Turing</item>
+        <item>Berners-Lee</item>
+        <item>Knuth</item>
+        <item>Brin</item>
+        <item>Hopper</item>
+        <item>Lovelace</item>
+    </string-array>
+    <string name="add_button_label">Add User</string>
 </resources>
