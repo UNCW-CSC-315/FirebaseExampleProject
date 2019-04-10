@@ -11,19 +11,16 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".DisplayActivity"
-            android:label="Firestore Example" >
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
+            android:label="Firestore Example"
+            android:parentActivityName=".MainActivity">
         </activity>
         <activity
             android:name=".MainActivity"
             android:label="Authentication Example">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

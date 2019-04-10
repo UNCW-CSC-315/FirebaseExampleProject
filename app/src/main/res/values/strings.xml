@@ -12,6 +12,7 @@
     <string name="first_name_label">First name:</string>
     <string name="last_name_label">Last name:</string>
     <string name="user_id_label">UserID:</string>
+    <string name="created_on">Created on %1$s</string>
     <string-array name="first_names">
         <item>Alan</item>
         <item>Tim</item>
@@ -29,4 +30,5 @@
         <item>Lovelace</item>
     </string-array>
     <string name="add_button_label">Add User</string>
+    <string name="delete_label">Click on a user to delete them.</string>
 </resources>

@@ -11,12 +11,15 @@ import android.widget.TextView;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
+import java.text.SimpleDateFormat;
+
 public class UserRecyclerAdapter extends FirestoreRecyclerAdapter<User, UserRecyclerAdapter.UserViewHolder> {
 
     public interface OnItemClickListener {
         void onItemClick(int position);
     }
 
+    final SimpleDateFormat format = new SimpleDateFormat("MM-dd-yy");
     private final OnItemClickListener listener;
 
     UserRecyclerAdapter(FirestoreRecyclerOptions<User> options, OnItemClickListener listener) {
@@ -29,6 +32,7 @@ public class UserRecyclerAdapter extends FirestoreRecyclerAdapter<User, UserRecy
         final TextView userId;
         final TextView firstName;
         final TextView lastName;
+        final TextView createdOn;
 
         UserViewHolder(CardView v) {
             super(v);
@@ -36,6 +40,7 @@ public class UserRecyclerAdapter extends FirestoreRecyclerAdapter<User, UserRecy
             userId = v.findViewById(R.id.item_user_id);
             firstName = v.findViewById(R.id.item_first_name);
             lastName = v.findViewById(R.id.item_last_name);
+            createdOn = v.findViewById(R.id.item_created_on);
         }
     }
 
@@ -47,6 +52,8 @@ public class UserRecyclerAdapter extends FirestoreRecyclerAdapter<User, UserRecy
         holder.userId.setText(user.getUserId());
         holder.firstName.setText(user.getFirst());
         holder.lastName.setText(user.getLast());
+        holder.createdOn.setText(holder.view.getContext()
+                .getString(R.string.created_on, format.format(user.getCreatedTime())));
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
