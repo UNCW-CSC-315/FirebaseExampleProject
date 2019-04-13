@@ -147,4 +147,8 @@ public class MainActivity extends AppCompatActivity {
     public void launchFirestoreActivity(View view) {
         startActivity(new Intent(this, DisplayActivity.class));
     }
+
+    public void launchStorageActivity(View view) {
+        startActivity(new Intent(this, StorageActivity.class));
+    }
 }

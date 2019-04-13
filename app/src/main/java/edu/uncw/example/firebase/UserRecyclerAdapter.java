@@ -19,7 +19,7 @@ public class UserRecyclerAdapter extends FirestoreRecyclerAdapter<User, UserRecy
         void onItemClick(int position);
     }
 
-    final SimpleDateFormat format = new SimpleDateFormat("MM-dd-yy");
+    private final SimpleDateFormat format = new SimpleDateFormat("MM-dd-yy");
     private final OnItemClickListener listener;
 
     UserRecyclerAdapter(FirestoreRecyclerOptions<User> options, OnItemClickListener listener) {

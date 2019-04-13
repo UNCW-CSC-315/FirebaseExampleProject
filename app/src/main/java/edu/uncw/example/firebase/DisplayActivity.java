@@ -36,8 +36,6 @@ public class DisplayActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         // Set up the Spinners so we can quickly add new data
         mFirstNamesSpinner = findViewById(R.id.first_names);
         ArrayAdapter<CharSequence> firstNamesAdapter = ArrayAdapter.createFromResource(this,
