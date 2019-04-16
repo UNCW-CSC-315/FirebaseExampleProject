@@ -28,7 +28,7 @@ public class StorageActivity extends AppCompatActivity {
     private final StorageReference mStorageRef = FirebaseStorage.getInstance().getReference();
     private final FirebaseFirestore mDb = FirebaseFirestore.getInstance();
 
-    private List<Plant> plantData = new ArrayList<>();
+    private List<Plant> plantList = new ArrayList<>();
     private int mCurrentImage = 0;
 
     private TextView mPlantNameTextView;
@@ -50,12 +50,12 @@ public class StorageActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-                            plantData = new ArrayList<>();
+                            plantList = new ArrayList<>();
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 // Converts the Firestore documents into a Plant objects for
                                 // easier manipulation in Java
                                 Plant plant = document.toObject(Plant.class);
-                                plantData.add(plant);
+                                plantList.add(plant);
                             }
                             updateUI(mCurrentImage);
                         } else {
@@ -70,7 +70,7 @@ public class StorageActivity extends AppCompatActivity {
         mPlantImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCurrentImage = (mCurrentImage + 1) % plantData.size();
+                mCurrentImage = (mCurrentImage + 1) % plantList.size();
                 updateUI(mCurrentImage);
             }
         });
@@ -78,20 +78,20 @@ public class StorageActivity extends AppCompatActivity {
     }
 
     /**
-     * display a plant's name and picture according to its index in plantData
+     * display a plant's name and picture according to its index in plantList
      *
-     * @param imageNum the index in plantData of the plant to show
+     * @param imageNum the index in plantList of the plant to show
      */
     private void updateUI(int imageNum) {
-        if(plantData.isEmpty() || imageNum < 0 || imageNum > plantData.size()) {
+        if(plantList.isEmpty() || imageNum < 0 || imageNum > plantList.size()) {
             mPlantNameTextView.setText(R.string.no_plant);
             mPlantImageView.setVisibility(View.GONE);
         }
         else {
-            mPlantNameTextView.setText(plantData.get(imageNum).getName());
-            mPlantImageView.setContentDescription(String.format(getResources().getString(R.string.plant_image_description), plantData.get(imageNum).getName()));
+            mPlantNameTextView.setText(plantList.get(imageNum).getName());
+            mPlantImageView.setContentDescription(String.format(getResources().getString(R.string.plant_image_description), plantList.get(imageNum).getName()));
             mPlantImageView.setVisibility(View.VISIBLE);
-            StorageReference image = mStorageRef.child(plantData.get(imageNum).getImageFile());
+            StorageReference image = mStorageRef.child(plantList.get(imageNum).getImageFile());
 
             // Glide is a 3rd party library that simplifies image downloading, caching,
             // and injection into your UI. This tells Glide to load the image from Storage and
