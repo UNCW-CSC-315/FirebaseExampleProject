@@ -13,7 +13,7 @@
             android:label="Storage and Picture Example"
             android:parentActivityName=".MainActivity"/>
         <activity
-            android:name=".DisplayActivity"
+            android:name=".FirestoreActivity"
             android:label="Firestore Example"
             android:parentActivityName=".MainActivity"></activity>
         <activity

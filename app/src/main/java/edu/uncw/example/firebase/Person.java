@@ -2,7 +2,7 @@ package edu.uncw.example.firebase;
 
 import java.util.Date;
 
-class User {
+class Person {
 
     private String first;
     private String last;
@@ -10,10 +10,10 @@ class User {
     private Date createdTime;
 
     // No-argument constructor is required to support conversion of Firestore document to POJO
-    public User() {}
+    public Person() {}
 
     // All-argument constructor is required to support conversion of Firestore document to POJO
-    public User(String first, String last, String userId, Date createdTime) {
+    public Person(String first, String last, String userId, Date createdTime) {
         this.first = first;
         this.last = last;
         this.userId = userId;
