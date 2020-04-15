@@ -5,7 +5,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -38,20 +37,10 @@ public class FirestoreSearchActivity extends AppCompatActivity {
                 .setQuery(query, Person.class)
                 .build();
 
-        mAdapter = new PersonRecyclerAdapter(options, new PersonRecyclerAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-                Person person = mAdapter.getSnapshots().getSnapshot(position).toObject(Person.class);
-                String id = mAdapter.getSnapshots().getSnapshot(position).getId();
-                mDb.collection(PEOPLE).document(id).delete();
-
-                Toast.makeText(getApplicationContext(),"Deleting " + person.getUserId(),Toast.LENGTH_SHORT).show();
-            }
-        });
+        mAdapter = new PersonRecyclerAdapter(options);
         recyclerView.setAdapter(mAdapter);
 
         EditText searchBox = findViewById(R.id.searchBox);
-        searchBox = findViewById(R.id.searchBox);
         searchBox.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -65,25 +54,23 @@ public class FirestoreSearchActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                Log.d(TAG, "Searchbox changed to: " + s.toString());
+                Log.d(TAG, "Searchbox has changed to: " + s.toString());
+                Query query;
                 if (s.toString().isEmpty()) {
-                    Query query = mDb.collection(PEOPLE)
+                    query = mDb.collection(PEOPLE)
                             .orderBy("createdTime", Query.Direction.ASCENDING);
-                    FirestoreRecyclerOptions<Person> options = new FirestoreRecyclerOptions.Builder<Person>()
-                            .setQuery(query, Person.class)
-                            .build();
-                    mAdapter.updateOptions(options);
                 } else {
-                    Query query = mDb.collection(PEOPLE)
+                    query = mDb.collection(PEOPLE)
                             .whereEqualTo("last", s.toString())
                             .orderBy("createdTime", Query.Direction.ASCENDING);
-                    FirestoreRecyclerOptions<Person> options = new FirestoreRecyclerOptions.Builder<Person>()
-                            .setQuery(query, Person.class)
-                            .build();
-                    mAdapter.updateOptions(options);
                 }
+                FirestoreRecyclerOptions<Person> options = new FirestoreRecyclerOptions.Builder<Person>()
+                        .setQuery(query, Person.class)
+                        .build();
+                mAdapter.updateOptions(options);
             }
         });
+
     }
 
     @Override

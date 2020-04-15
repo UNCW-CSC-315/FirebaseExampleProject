@@ -29,6 +29,11 @@ public class PersonRecyclerAdapter extends FirestoreRecyclerAdapter<Person, Pers
         this.listener = listener;
     }
 
+    PersonRecyclerAdapter(FirestoreRecyclerOptions<Person> options) {
+        super(options);
+        this.listener = null;
+    }
+
     class PersonViewHolder extends RecyclerView.ViewHolder {
         final CardView view;
         final TextView userId;
@@ -56,12 +61,14 @@ public class PersonRecyclerAdapter extends FirestoreRecyclerAdapter<Person, Pers
         holder.lastName.setText(person.getLast());
         holder.createdOn.setText(holder.view.getContext()
                 .getString(R.string.created_on, format.format(person.getCreatedTime())));
-        holder.view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onItemClick(holder.getAdapterPosition());
-            }
-        });
+        if (listener != null) {
+            holder.view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onItemClick(holder.getAdapterPosition());
+                }
+            });
+        }
     }
 
     // Create new views (invoked by the layout manager)
