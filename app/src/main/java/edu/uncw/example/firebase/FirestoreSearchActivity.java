@@ -17,11 +17,10 @@ import com.google.firebase.firestore.Query;
 
 public class FirestoreSearchActivity extends AppCompatActivity {
 
-    private static final String TAG = "DisplayActivity";
+    private static final String TAG = "FirestoreSearchActivity";
     private static final String PEOPLE = "people";
 
     private final FirebaseFirestore mDb = FirebaseFirestore.getInstance();
-    private EditText mSearchBox;
 
     private PersonRecyclerAdapter mAdapter;
 
@@ -29,8 +28,6 @@ public class FirestoreSearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_firestore_search);
-
-        mSearchBox = findViewById(R.id.searchBox);
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
@@ -53,9 +50,9 @@ public class FirestoreSearchActivity extends AppCompatActivity {
         });
         recyclerView.setAdapter(mAdapter);
 
-
-        mSearchBox = findViewById(R.id.searchBox);
-        mSearchBox.addTextChangedListener(new TextWatcher() {
+        EditText searchBox = findViewById(R.id.searchBox);
+        searchBox = findViewById(R.id.searchBox);
+        searchBox.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -69,13 +66,22 @@ public class FirestoreSearchActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 Log.d(TAG, "Searchbox changed to: " + s.toString());
-                Query query = mDb.collection(PEOPLE)
-                        .whereEqualTo("last", s.toString())
-                        .orderBy("createdTime", Query.Direction.ASCENDING);
-                FirestoreRecyclerOptions<Person> options = new FirestoreRecyclerOptions.Builder<Person>()
-                        .setQuery(query, Person.class)
-                        .build();
-                mAdapter.updateOptions(options);
+                if (s.toString().isEmpty()) {
+                    Query query = mDb.collection(PEOPLE)
+                            .orderBy("createdTime", Query.Direction.ASCENDING);
+                    FirestoreRecyclerOptions<Person> options = new FirestoreRecyclerOptions.Builder<Person>()
+                            .setQuery(query, Person.class)
+                            .build();
+                    mAdapter.updateOptions(options);
+                } else {
+                    Query query = mDb.collection(PEOPLE)
+                            .whereEqualTo("last", s.toString())
+                            .orderBy("createdTime", Query.Direction.ASCENDING);
+                    FirestoreRecyclerOptions<Person> options = new FirestoreRecyclerOptions.Builder<Person>()
+                            .setQuery(query, Person.class)
+                            .build();
+                    mAdapter.updateOptions(options);
+                }
             }
         });
     }
