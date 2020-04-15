@@ -151,4 +151,8 @@ public class MainActivity extends AppCompatActivity {
     public void launchStorageActivity(View view) {
         startActivity(new Intent(this, StorageActivity.class));
     }
+
+    public void launchSearchActivity(View view) {
+        startActivity(new Intent(this, FirestoreSearchActivity.class));
+    }
 }

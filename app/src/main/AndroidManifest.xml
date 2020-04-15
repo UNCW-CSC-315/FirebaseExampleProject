@@ -9,13 +9,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".StorageActivity"
+        <activity
+            android:name=".StorageActivity"
             android:label="Storage and Picture Example"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".FirestoreActivity"
             android:label="Firestore Example"
-            android:parentActivityName=".MainActivity"></activity>
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".FirestoreSearchActivity"
+            android:label="Firestore Search Example "
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".MainActivity"
             android:label="Authentication Example">
