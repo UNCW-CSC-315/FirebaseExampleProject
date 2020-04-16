@@ -3,16 +3,15 @@ package edu.uncw.example.firebase;
 import androidx.annotation.NonNull;
 
 public class Patient {
-
     private String name;
     private int age;
+
+    public Patient() {
+    }
 
     public Patient(String name, int age) {
         this.name = name;
         this.age = age;
-    }
-
-    public Patient() {
     }
 
     public String getName() {
