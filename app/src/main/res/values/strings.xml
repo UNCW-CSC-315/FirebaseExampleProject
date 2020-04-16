@@ -6,9 +6,10 @@
     <string name="logout">Logout</string>
     <string name="login">Login</string>
     <string name="register">Create New Account</string>
-    <string name="firestore_button">Launch Firestore Activity</string>
-    <string name="storage_and_picture_button">Launch Firebase Storage and Picture</string>
-    <string name="search_button">Launch Firestore Search Activity</string>
+    <string name="firestore_button">Firestore + RecyclerView</string>
+    <string name="storage_and_picture_button">Storage + Picture</string>
+    <string name="search_button">Firestore Search</string>
+    <string name="firestore_listview">Firestore + ListView</string>
     <string name="plantHeader">Click on the image below to see a new plant</string>
     <string name="plant_image_description">A picture of a %1$s</string>
     <string name="no_plant">No plants to show! Maybe the location of them is incorrect?</string>

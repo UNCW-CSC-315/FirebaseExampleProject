@@ -2,15 +2,16 @@ package edu.uncw.example.firebase;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -154,5 +155,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void launchSearchActivity(View view) {
         startActivity(new Intent(this, FirestoreSearchActivity.class));
+    }
+
+    public void launchFirestoreListView(View view) {
+        startActivity(new Intent(this, FirestoreListActivity.class));
     }
 }
