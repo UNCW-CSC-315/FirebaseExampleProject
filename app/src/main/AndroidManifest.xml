@@ -11,7 +11,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:label="Authentication Example">
+            android:label="Firebase Example">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
