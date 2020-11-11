@@ -40,37 +40,6 @@ public class FirestoreSearchActivity extends AppCompatActivity {
         mAdapter = new PersonRecyclerAdapter(options);
         recyclerView.setAdapter(mAdapter);
 
-        EditText searchBox = findViewById(R.id.searchBox);
-        searchBox.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                Log.d(TAG, "Searchbox has changed to: " + s.toString());
-                Query query;
-                if (s.toString().isEmpty()) {
-                    query = mDb.collection(PEOPLE)
-                            .orderBy("createdTime", Query.Direction.ASCENDING);
-                } else {
-                    query = mDb.collection(PEOPLE)
-                            .whereEqualTo("last", s.toString())
-                            .orderBy("createdTime", Query.Direction.ASCENDING);
-                }
-                FirestoreRecyclerOptions<Person> options = new FirestoreRecyclerOptions.Builder<Person>()
-                        .setQuery(query, Person.class)
-                        .build();
-                mAdapter.updateOptions(options);
-            }
-        });
-
     }
 
     @Override
