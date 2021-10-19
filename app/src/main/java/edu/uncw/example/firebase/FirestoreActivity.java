@@ -63,11 +63,14 @@ public class FirestoreActivity extends AppCompatActivity {
         mAdapter = new PersonRecyclerAdapter(options, new PersonRecyclerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                Person person = mAdapter.getSnapshots().getSnapshot(position).toObject(Person.class);
-                String id = mAdapter.getSnapshots().getSnapshot(position).getId();
-                mDb.collection(PEOPLE).document(id).delete();
+                // position can be -1 if the user clicks repeatedly super fast.
+                if(position >= 0) {
+                    Person person = mAdapter.getSnapshots().getSnapshot(position).toObject(Person.class);
+                    String id = mAdapter.getSnapshots().getSnapshot(position).getId();
+                    mDb.collection(PEOPLE).document(id).delete();
 
-                Toast.makeText(getApplicationContext(),"Deleting " + person.getUserId(),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Deleting " + person.getUserId(), Toast.LENGTH_SHORT).show();
+                }
             }
         });
         recyclerView.setAdapter(mAdapter);

@@ -120,8 +120,8 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/firestoreRecyclerButton"
-        android:layout_width="0dp"
-        app:layout_constraintWidth_default="wrap"
+        android:layout_width="wrap_content"
+        app:layout_constrainedWidth="true"
         android:layout_height="wrap_content"
         android:text="@string/firestore_button"
         android:onClick="launchFirestoreActivity"
@@ -134,8 +134,8 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/storageButton"
-        android:layout_width="0dp"
-        app:layout_constraintWidth_default="wrap"
+        android:layout_width="wrap_content"
+        app:layout_constrainedWidth="true"
         android:layout_height="0dp"
         android:text="@string/storage_and_picture_button"
         android:onClick="launchStorageActivity"
@@ -155,9 +155,9 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/searchButton"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintWidth_default="wrap"
+        app:layout_constrainedWidth="true"
         android:layout_margin="8dp"
         android:text="@string/search_button"
         android:onClick="launchSearchActivity"
@@ -169,8 +169,8 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/firestoreListButton"
-        android:layout_width="0dp"
-        app:layout_constraintWidth_default="wrap"
+        android:layout_width="wrap_content"
+        app:layout_constrainedWidth="true"
         android:layout_height="0dp"
         android:text="@string/firestore_listview"
         android:onClick="launchFirestoreListView"

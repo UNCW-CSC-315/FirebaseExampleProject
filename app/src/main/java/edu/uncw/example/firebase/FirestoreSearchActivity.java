@@ -68,6 +68,7 @@ public class FirestoreSearchActivity extends AppCompatActivity {
                         .setQuery(query, Person.class)
                         .build();
                 mAdapter.updateOptions(options);
+                mAdapter.notifyDataSetChanged();
             }
         });
 
