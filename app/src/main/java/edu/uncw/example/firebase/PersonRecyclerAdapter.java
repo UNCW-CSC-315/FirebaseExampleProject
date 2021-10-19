@@ -65,7 +65,7 @@ public class PersonRecyclerAdapter extends FirestoreRecyclerAdapter<Person, Pers
             holder.view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    listener.onItemClick(holder.getAdapterPosition());
+                    listener.onItemClick(holder.getAbsoluteAdapterPosition());
                 }
             });
         }
