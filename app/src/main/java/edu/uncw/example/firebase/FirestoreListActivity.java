@@ -3,7 +3,6 @@ package edu.uncw.example.firebase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -24,8 +23,6 @@ public class FirestoreListActivity extends AppCompatActivity {
     private final FirebaseFirestore mDb = FirebaseFirestore.getInstance();
     private static final String TAG = "FirestoreListActivity";
     private static final String PATIENTS = "patients";
-
-    private ArrayAdapter<Patient> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
