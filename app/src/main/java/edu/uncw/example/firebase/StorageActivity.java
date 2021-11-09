@@ -1,6 +1,7 @@
 package edu.uncw.example.firebase;
 
 import android.content.ContentResolver;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -10,7 +11,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.text.TextUtils;
 import android.util.Log;
@@ -22,7 +22,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
@@ -51,69 +50,95 @@ public class StorageActivity extends AppCompatActivity {
     private ImageView mPlantImageView;
 
     private ImageView mImageThumbnail;
-    private ConstraintLayout mImagePreviewSection;
 
     ActivityResultLauncher<String> getContent = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
             new ActivityResultCallback<Uri>() {
                 @Override
                 public void onActivityResult(Uri result) {
-                    if (result != null) {
-                        mImagePreviewSection.setVisibility(View.VISIBLE);
-                        // Handle the returned URI
+                    if(result != null) {
                         ContentResolver cr = getBaseContext().getContentResolver();
+                        // image/jpeg
+                        // image/png
+                        //       ^^^^
+
+                        // imageType will either be "png" or "jpeg"
                         String imageType = cr.getType(result).split("/")[1];
                         mImageThumbnail.setImageURI(result);
                         mImageThumbnail.setOnClickListener(v -> {
-                                    EditText newPlantName = findViewById(R.id.newName);
-                                    String name = newPlantName.getText().toString().trim();
-                                    if (TextUtils.isEmpty(name)) {
-                                        newPlantName.setError("You must provide a name");
-                                    } else {
-                                        Plant newPlant = new Plant(name, "images/" + name + "." + imageType);
-                                        mDb.collection("plants")
-                                                .add(newPlant).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            EditText newPlantName = findViewById(R.id.newName);
+                            String name = newPlantName.getText().toString().trim();
+                            if (TextUtils.isEmpty(name)) {
+                                newPlantName.setError("You must provide a name");
+                            }
+                            else {
+                                // name: "flytrap"
+                                // imageFile: "images/flytrap.png"
+                                Plant newPlant = new Plant(name, "images/"+name+"."+imageType);
+                                mDb.collection("plants").add(newPlant)
+                                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                             @Override
                                             public void onSuccess(DocumentReference documentReference) {
-                                                Log.d(TAG, "Plant entry added successfully.");
+                                                Log.d(TAG, "Plant successfully added");
                                                 mStorageRef.child(newPlant.getImageFile())
                                                         .putFile(result)
-                                                        .addOnSuccessListener(
-                                                                new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                                                    @Override
-                                                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                                                        Toast.makeText(StorageActivity.this,
-                                                                                "New plant picture saved!",
-                                                                                Toast.LENGTH_LONG).show();
-                                                                        loadPlants();
-                                                                        mImagePreviewSection.setVisibility(View.GONE);
-                                                                    }
-                                                                }
-                                                        )
-                                                        .addOnFailureListener(new OnFailureListener() {
+                                                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                                             @Override
-                                                            public void onFailure(@NonNull Exception e) {
+                                                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                                                 Toast.makeText(StorageActivity.this,
-                                                                        "Could not save new plant!",
+                                                                        "New plant picture saved!",
                                                                         Toast.LENGTH_LONG).show();
-                                                                // TODO: Need to delete Firestore plant
-                                                                documentReference.delete();
+                                                                reloadPlants();
                                                             }
+                                                        })
+                                                        .addOnFailureListener(e -> {
+                                                            Toast.makeText(StorageActivity.this,
+                                                                    "Error: Could not save the plant!",
+                                                                    Toast.LENGTH_LONG).show();
+                                                            documentReference.delete();
                                                         });
+
                                             }
                                         });
-
-                                    }
+                            }
 
                                 }
-
                         );
                     }
+
                 }
-            });
+            }
+    );
 
 
-    private void loadPlants() {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_storage);
+        mPlantImageView = findViewById(R.id.plant_image);
+        mPlantNameTextView = findViewById(R.id.plant_name);
+        mImageThumbnail = findViewById(R.id.thumbnail);
+
+
+        // Clicking on a plant image will advance to the next picture.
+        mPlantImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCurrentImage = (mCurrentImage + 1) % plantList.size();
+                updateUI(mCurrentImage);
+            }
+        });
+
+        ImageButton galleryButton = findViewById(R.id.galleryButton);
+        galleryButton.setOnClickListener(v-> {
+            getContent.launch("image/*");
+        });
+
+        reloadPlants();
+
+    }
+
+    private void reloadPlants() {
         // Download our Plant information from the Firestore, which contains the name of the plant
         // and its location in Storage
         mDb.collection("plants")
@@ -133,39 +158,8 @@ public class StorageActivity extends AppCompatActivity {
                         } else {
                             Log.w(TAG, "Error getting documents: ", task.getException());
                         }
-
                     }
                 });
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_storage);
-        mPlantImageView = findViewById(R.id.plant_image);
-        mPlantNameTextView = findViewById(R.id.plant_name);
-
-        loadPlants();
-
-
-        // Clicking on a plant image will advance to the next picture.
-        mPlantImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCurrentImage = (mCurrentImage + 1) % plantList.size();
-                updateUI(mCurrentImage);
-            }
-        });
-
-
-        mImageThumbnail = findViewById(R.id.thumbnail);
-        ImageButton galleryButton = findViewById(R.id.galleryButton);
-        galleryButton.setOnClickListener(v -> {
-            getContent.launch("image/*");
-        });
-        mImagePreviewSection = findViewById(R.id.imagePreview);
-
-
     }
 
     /**
@@ -174,10 +168,11 @@ public class StorageActivity extends AppCompatActivity {
      * @param imageNum the index in plantList of the plant to show
      */
     private void updateUI(int imageNum) {
-        if (plantList.isEmpty() || imageNum < 0 || imageNum > plantList.size()) {
+        if(plantList.isEmpty() || imageNum < 0 || imageNum > plantList.size()) {
             mPlantNameTextView.setText(R.string.no_plant);
             mPlantImageView.setVisibility(View.GONE);
-        } else {
+        }
+        else {
             mPlantNameTextView.setText(plantList.get(imageNum).getName());
             mPlantImageView.setContentDescription(String.format(getResources().getString(R.string.plant_image_description), plantList.get(imageNum).getName()));
             mPlantImageView.setVisibility(View.VISIBLE);
@@ -210,7 +205,7 @@ public class StorageActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
         GlideApp.with(this).resumeRequests();
 
-        if (savedInstanceState != null) {
+        if(savedInstanceState != null) {
             mCurrentImage = savedInstanceState.getInt(CURRENT_PLANT);
         }
     }
