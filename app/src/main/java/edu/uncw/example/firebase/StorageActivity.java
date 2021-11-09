@@ -1,5 +1,6 @@
 package edu.uncw.example.firebase;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.media.Image;
 import android.net.Uri;
@@ -11,6 +12,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import android.text.TextUtils;
 import android.util.Log;
@@ -32,6 +34,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,64 +54,71 @@ public class StorageActivity extends AppCompatActivity {
 
     private ImageView mImageThumbnail;
 
+    private Uri uri;
+
+
+
     ActivityResultLauncher<String> getContent = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
             new ActivityResultCallback<Uri>() {
                 @Override
                 public void onActivityResult(Uri result) {
-                    if(result != null) {
-                        ContentResolver cr = getBaseContext().getContentResolver();
-                        // image/jpeg
-                        // image/png
-                        //       ^^^^
-
-                        // imageType will either be "png" or "jpeg"
-                        String imageType = cr.getType(result).split("/")[1];
-                        mImageThumbnail.setImageURI(result);
-                        mImageThumbnail.setOnClickListener(v -> {
-                            EditText newPlantName = findViewById(R.id.newName);
-                            String name = newPlantName.getText().toString().trim();
-                            if (TextUtils.isEmpty(name)) {
-                                newPlantName.setError("You must provide a name");
-                            }
-                            else {
-                                // name: "flytrap"
-                                // imageFile: "images/flytrap.png"
-                                Plant newPlant = new Plant(name, "images/"+name+"."+imageType);
-                                mDb.collection("plants").add(newPlant)
-                                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                            @Override
-                                            public void onSuccess(DocumentReference documentReference) {
-                                                Log.d(TAG, "Plant successfully added");
-                                                mStorageRef.child(newPlant.getImageFile())
-                                                        .putFile(result)
-                                                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                                            @Override
-                                                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                                                Toast.makeText(StorageActivity.this,
-                                                                        "New plant picture saved!",
-                                                                        Toast.LENGTH_LONG).show();
-                                                                reloadPlants();
-                                                            }
-                                                        })
-                                                        .addOnFailureListener(e -> {
-                                                            Toast.makeText(StorageActivity.this,
-                                                                    "Error: Could not save the plant!",
-                                                                    Toast.LENGTH_LONG).show();
-                                                            documentReference.delete();
-                                                        });
-
-                                            }
-                                        });
-                            }
-
-                                }
-                        );
-                    }
-
+                    createPictureFromUri(result);
                 }
             }
     );
+
+    private void createPictureFromUri(Uri result) {
+        if(result != null) {
+            ContentResolver cr = getBaseContext().getContentResolver();
+            // image/jpeg
+            // image/png
+            //       ^^^^
+
+            // imageType will either be "png" or "jpeg"
+            String imageType = cr.getType(result).split("/")[1];
+            mImageThumbnail.setImageURI(result);
+            mImageThumbnail.setOnClickListener(v -> {
+                        EditText newPlantName = findViewById(R.id.newName);
+                        String name = newPlantName.getText().toString().trim();
+                        if (TextUtils.isEmpty(name)) {
+                            newPlantName.setError("You must provide a name");
+                        }
+                        else {
+                            // name: "flytrap"
+                            // imageFile: "images/flytrap.png"
+                            Plant newPlant = new Plant(name, "images/"+name+"."+imageType);
+                            mDb.collection("plants").add(newPlant)
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                        @Override
+                                        public void onSuccess(DocumentReference documentReference) {
+                                            Log.d(TAG, "Plant successfully added");
+                                            mStorageRef.child(newPlant.getImageFile())
+                                                    .putFile(result)
+                                                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                                        @Override
+                                                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                                            Toast.makeText(StorageActivity.this,
+                                                                    "New plant picture saved!",
+                                                                    Toast.LENGTH_LONG).show();
+                                                            reloadPlants();
+                                                        }
+                                                    })
+                                                    .addOnFailureListener(e -> {
+                                                        Toast.makeText(StorageActivity.this,
+                                                                "Error: Could not save the plant!",
+                                                                Toast.LENGTH_LONG).show();
+                                                        documentReference.delete();
+                                                    });
+
+                                        }
+                                    });
+                        }
+
+                    }
+            );
+        }
+    }
 
 
     @Override
@@ -132,6 +142,26 @@ public class StorageActivity extends AppCompatActivity {
         ImageButton galleryButton = findViewById(R.id.galleryButton);
         galleryButton.setOnClickListener(v-> {
             getContent.launch("image/*");
+        });
+
+        File imagePath = new File(getFilesDir(), "my_images");
+        uri = FileProvider.getUriForFile(this, "edu.uncw.example.firebase.fileprovider", imagePath);
+
+        ActivityResultLauncher<Uri> takePicture = registerForActivityResult(
+                new ActivityResultContracts.TakePicture(),
+                new ActivityResultCallback<Boolean>() {
+                    @Override
+                    public void onActivityResult(Boolean result) {
+                        if (result) {
+                            createPictureFromUri(uri);
+                        }
+                    }
+                }
+        );
+
+        ImageButton cameraButton = findViewById(R.id.cameraButton);
+        cameraButton.setOnClickListener(v-> {
+            takePicture.launch(uri);
         });
 
         reloadPlants();
